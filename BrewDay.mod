@@ -1,4 +1,4 @@
-BEGIN, Yes, BrewDay;
+BEGIN;
 
           CREATE, 1, 0: 1440, 1;                      Batch 1 at start of day
           ASSIGN: Seq = 1:
