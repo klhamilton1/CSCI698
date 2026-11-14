@@ -7,15 +7,17 @@ ATTRIBUTES: Seq: BType: ArrT: TStamp: TMashIn: TLeaveMT:
  
 VARIABLES:
 ;   ---- decision variables / scenario controls
-            TB2, 300:                    ! Batch 2 release, min after start
+            TB2, 300:                    Batch 2 release, min after start
             Beer1Type, 1:
             Beer2Type, 1:
 ;   ---- water rates (gal/min) and buffer
-            FillRate, 1.0:               ! tankless heater, conservative end of 1-1.5
+            FillRate, 2.5:               measured on 10/15/26 boards (2.4, 2.8);
+;                                         used for every hot-water fill
             DrainRate, 2.0:
             Buf, 1:
 ;   ---- deterministic brewing steps (min)
-            MashInT, 12:  MashT, 60:  MashOutT, 10:  RecircT, 30:  BoilT, 60:
+;        MashT = rest after mash-in; mash-in + rest = 60 min (boards 7/12, 10/15)
+            MashInT, 12:  MashT, 48:  MashOutT, 10:  RecircT, 30:  BoilT, 60:
 ;   ---- mash-water volume by group (gal), group means of recipe depths
             FillVol(3), 55.1, 66.2, 73.9:
 ;   ---- tun cleaning (5 in x 3.155 gal/in = 15.8 gal)
@@ -65,6 +67,7 @@ SEEDS:      1, 100, No:
             5, 140, No:
             6, 150, No;
  
-REPLICATE,  500, 0, 1440, Yes, Yes, 0;
+REPLICATE,  500, 0, 1440, Yes, Yes, 0, , , ,Minutes;
  
 END;
+ 
