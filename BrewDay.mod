@@ -1,4 +1,4 @@
-BEGIN;
+BEGIN, Yes, BrewDay;
 
           CREATE, 1, 0: 1440, 1;                      Batch 1 at start of day
           ASSIGN: Seq = 1:
@@ -15,7 +15,7 @@ Brew      ASSIGN: ArrT = TNOW;
           ASSIGN: TMTWait = TNOW - ArrT:
                   MTIdle  = MX(0, ArrT - MTCleanT);
  
-; --- 1-min setup buffer, then deterministic fill from the tankless heater
+; --- 1-min setup buffer, then deterministic fill (FillRate = 2.5 gal/min)
           QUEUE,  JBufFillQ;
           SEIZE,  1: Jeff, 1;
           DELAY:  Buf;
@@ -35,13 +35,12 @@ Brew      ASSIGN: ArrT = TNOW;
           DELAY:  MashInT + Buf;
           RELEASE: Jeff, 1;
  
-; --- Batch 1 starts the fermenter-cleaning job (both fermenters at once)
-;     at the start of its mash rest
+; --- Batch 1 starts the fermenter-cleaning job (both fermenters at once) at the start of its mash rest
           BRANCH, 1: If, Seq == 1, DupFC, Yes:
                      Else, MashRest, Yes;
 DupFC     DUPLICATE: 1, FermClean;
  
-; --- mash rest 60 min (unattended), buffer, mash-out 10 min, buffer, recirculation 30 min
+; --- mash rest 48 min (mash-in + rest = 60), buffer, mash-out 10 min, buffer, recirculation 30 min
 MashRest  DELAY:  MashT;
           QUEUE,  JBufMashQ;
           SEIZE,  1: Jeff, 1;
