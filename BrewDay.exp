@@ -3,7 +3,7 @@ BEGIN;
 PROJECT, "Two-Batch Brew Day", "Kate Hamilton", 11/09/2026;
  
 ATTRIBUTES: Seq: BType: ArrT: TStamp: TMashIn: TLeaveMT:
-            TrBoil: PreBoilT: TrFerm: TMTWait: TBTWait: TFWait: TunIdx;
+            TrBoil: PreBoilT: TrFerm: TMTWait: TBTWait: TFWait: TunIdx: F2Ready;
  
 VARIABLES:
 ;   ---- decision variables / scenario controls
@@ -20,8 +20,11 @@ VARIABLES:
             FillVol(3), 55.1, 66.2, 73.9:
 ;   ---- tun cleaning (5 in x 3.155 gal/in = 15.8 gal)
             CleanVol, 15.8:  ScrubT, 5:  TunSoak, 30:
-;   ---- fermenter cleaning - PLACEHOLDERS, CONFIRM with Jeff
-            FermVol, 10:  FRinse, 5:  FSoak, 30:
+;   ---- fermenter cleaning (both fermenters, one after the other)
+;        FSit = OxiClean sit before draining (Jeff: 5 min)
+;        FermVol, SanVol, SanSit, SanXfer are PLACEHOLDERS - confirm
+            FermVol, 10:  FSit, 5:
+            SanVol, 10:  ColdRate, 5.0:  SanSit, 5:  SanXfer, 5:
 ;   ---- pre-boil conditional model
             PBMean(3), 56.6, 47.1, 47.1:
             PBSD(3), 10.2, 11.4, 11.4:
@@ -39,9 +42,9 @@ QUEUES:     MashTunQ, FIFO:  BoilTunQ, FIFO:  FermQ, FIFO:  ChillQ, FIFO:
             JBufFillQ, FIFO: JMashInQ, FIFO:  JBufMashQ, FIFO: JBufMOQ, FIFO:
             JSpargeQ, FIFO:  JBufFermQ, FIFO:
             HWFillQ, FIFO:   HWSpargeQ, FIFO:
-            FC1ScanQ, FIFO:  FC1JQ, FIFO:  FC1HQ, FIFO:  FC2HQ, FIFO:
-            FC4ScanQ, FIFO:  FC4JQ, FIFO:  FC4HQ, FIFO:  FC5HQ, FIFO:
-            FC7ScanQ, FIFO:  FC7JQ, FIFO:  FC7HQ, FIFO:
+            FCFill1Q, FIFO:  FCFill2Q, FIFO:
+            FCR1ScanQ, FIFO: FCR1JQ, FIFO: FCR1HQ, FIFO:
+            FCR2ScanQ, FIFO: FCR2JQ, FIFO: FCR2HQ, FIFO:
             TCFillQ, FIFO:   TCScrub1Q, FIFO: TCScrub2Q, FIFO;
  
 COUNTERS:   BatchesDone, 2;
@@ -59,7 +62,8 @@ SEEDS:      1, 100, No:
             2, 110, No:
             3, 120, No:
             4, 130, No:
-            5, 140, No;
+            5, 140, No:
+            6, 150, No;
  
 REPLICATE,  500, 0, 1440, Yes, Yes, 0;
  
