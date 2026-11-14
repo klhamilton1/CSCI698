@@ -7,12 +7,11 @@ ATTRIBUTES: Seq: BType: ArrT: TStamp: TMashIn: TLeaveMT:
  
 VARIABLES:
 ;   ---- decision variables / scenario controls
-            TB2, 300:                    Batch 2 release, min after start
+            TB2, 300:                    ! Batch 2 release, min after start
             Beer1Type, 1:
             Beer2Type, 1:
 ;   ---- water rates (gal/min) and buffer
-            FillRate, 2.5:               measured on 10/15/26 boards (2.4, 2.8);
-;                                         used for every hot-water fill
+            FillRate, 2.5:               ! new calculated flow rate, conservative end
             DrainRate, 2.0:
             Buf, 1:
 ;   ---- deterministic brewing steps (min)
