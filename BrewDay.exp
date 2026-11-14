@@ -1,0 +1,66 @@
+BEGIN;
+ 
+PROJECT, "Two-Batch Brew Day", "Kate Hamilton", 11/09/2026;
+ 
+ATTRIBUTES: Seq: BType: ArrT: TStamp: TMashIn: TLeaveMT:
+            TrBoil: PreBoilT: TrFerm: TMTWait: TBTWait: TFWait: TunIdx;
+ 
+VARIABLES:
+;   ---- decision variables / scenario controls
+            TB2, 300:                    ! Batch 2 release, min after start
+            Beer1Type, 1:
+            Beer2Type, 1:
+;   ---- water rates (gal/min) and buffer
+            FillRate, 1.0:               ! tankless heater, conservative end of 1-1.5
+            DrainRate, 2.0:
+            Buf, 1:
+;   ---- deterministic brewing steps (min)
+            MashInT, 12:  MashT, 60:  MashOutT, 10:  RecircT, 30:  BoilT, 60:
+;   ---- mash-water volume by type (gal) - CONFIRM against recipes
+            FillVol(2), 63.1, 74.0:
+;   ---- tun cleaning (5 in x 3.155 gal/in = 15.8 gal)
+            CleanVol, 15.8:  ScrubT, 5:  TunSoak, 30:
+;   ---- fermenter cleaning - PLACEHOLDERS, CONFIRM with Jeff
+            FermVol, 10:  FRinse, 5:  FSoak, 30:
+;   ---- pre-boil conditional model
+            PBMean(2), 56.6, 47.1:
+            PBSD(2), 10.2, 11.4:
+            PBRho, -0.62:  PBk, 0.7846:  TrMean, 46.1:  TrSD, 16.8:
+;   ---- state variables
+            CleanFerm, 0:  MTCleanT, 0:  MTIdle, 0:  LeaveMT1, 0;
+ 
+RESOURCES:  Jeff, 1:
+            HotWater, 1:
+            MashTun, 1:
+            BoilTun, 1:
+            ChillPlate, 1;
+ 
+QUEUES:     MashTunQ, FIFO:  BoilTunQ, FIFO:  FermQ, FIFO:  ChillQ, FIFO:
+            JBufFillQ, FIFO: JMashInQ, FIFO:  JBufMashQ, FIFO: JBufMOQ, FIFO:
+            JSpargeQ, FIFO:  JBufFermQ, FIFO:
+            HWFillQ, FIFO:   HWSpargeQ, FIFO:
+            FC1ScanQ, FIFO:  FC1JQ, FIFO:  FC1HQ, FIFO:  FC2HQ, FIFO:
+            FC4ScanQ, FIFO:  FC4JQ, FIFO:  FC4HQ, FIFO:  FC5HQ, FIFO:
+            FC7ScanQ, FIFO:  FC7JQ, FIFO:  FC7HQ, FIFO:
+            TCFillQ, FIFO:   TCScrub1Q, FIFO: TCScrub2Q, FIFO;
+ 
+COUNTERS:   BatchesDone, 2;
+ 
+TALLIES:    Makespan:  B2MTWait:  Conflict:  MTIdleT:
+            B2BTWait:  B2FWait:   B2Gap:     BatchCycle;
+ 
+DSTATS:     NR(Jeff),       Jeff Busy:
+            NR(HotWater),   Hot Water Busy:
+            NR(MashTun),    Mash Tun Occupied:
+            NR(BoilTun),    Boil Tun Occupied:
+            NR(ChillPlate), Chill Plate Busy;
+ 
+SEEDS:      1, 260111, No:
+            2, 260112, No:
+            3, 260113, No:
+            4, 260114, No:
+            5, 260115, No;
+ 
+REPLICATE,  500, 0, 1440, Yes, Yes, 0;
+ 
+END;
