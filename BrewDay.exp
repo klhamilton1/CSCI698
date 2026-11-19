@@ -16,7 +16,7 @@ VARIABLES:
             Beer2Type, 1:
             MashGate, 0:
 ;   water rates (gal/min) and buffer
-            FillRate, 2.5:
+            FillRate, 2.65:
             DrainRate, 2.0:
             Buf, 1:
 ;   deterministic brewing steps (min)
