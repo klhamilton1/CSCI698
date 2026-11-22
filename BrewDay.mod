@@ -1,9 +1,15 @@
 BEGIN;
+; one controller per replication
           CREATE, 1, 0: 1440, 1;                      Batch 1 at start of day
+          ASSIGN: Scen      = AINT((NREP - 1) / RepsPer) + 1:
+                  TB2       = ScTB2(Scen):
+                  Beer1Type = ScB1(Scen):
+                  Beer2Type = ScB2(Scen):
+                  MashGate  = ScGate(Scen);
+          DUPLICATE: 1, B2Rel;
           ASSIGN: Seq = 1:
-                  BType = Beer1Type:   NEXT(Brew);    BType: beer code 1-7 (see .exp)
- 
-          CREATE, 1, TB2: 1440, 1;                    Batch 2 at chosen start
+                  BType = Beer1Type:   NEXT(Brew);    Batch 1 at start of day
+B2Rel     DELAY:  TB2;                                Batch 2 at chosen start
           ASSIGN: Seq = 2:
                   BType = Beer2Type:   NEXT(Brew);
  
