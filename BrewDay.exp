@@ -11,7 +11,7 @@ VARIABLES:
 ;   TB2 = Batch 2 release, min after start
 ;   MashGate: 0 = no hold, 1 = Batch 2 mash-in waits for Batch 1 tilt,
 ;             2 = Batch 2 fill waits for Batch 1 tilt
-            TB2, 300:
+            TB2, 279:
             Beer1Type, 1:
             Beer2Type, 1:
             MashGate, 0:
@@ -34,10 +34,8 @@ VARIABLES:
 ;   fermenter cleaning (both fermenters, one after the other)
             FermVol, 10: FSit, 5:
             SanVol, 10: ColdRate, 5.0: SanSit, 5: SanXfer, 5:
-;   end of transfer to fermenter (Jeff's feedback)
 ;   TiltGalLo/Hi = gallons recovered by tilting (Jeff: 5-6)
 ;   FermBatchVol = batch volume, mean of boards 85, 96, 95, 87 gal
-;   WatchT, KillT, TeardownT = PLACEHOLDERS, confirm with Jeff
             TiltGalLo, 5: TiltGalHi, 6: FermBatchVol, 91:
             WatchT, 3: KillT, 1: TeardownT, 5:
 ;   pre-boil conditional model
