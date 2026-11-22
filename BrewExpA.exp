@@ -1,0 +1,97 @@
+BEGIN;
+ 
+PROJECT, "Two-Batch Brew Day", "Kate Hamilton", 11/19/2026;
+ 
+ATTRIBUTES: Seq: BType: ArrT: TStamp: TMashIn: TLeaveMT:
+            TrBoil: PreBoilT: TrFerm: TMTWait: TBTWait: TFWait: TunIdx: F2Ready:
+            TiltT: MIWait: GateWait;
+ 
+VARIABLES:
+;   SCENARIO MATRIX (Experiment A: 7 Batch 1 beers): 7 scenarios x RepsPer replications
+;   scenario s uses replications (s-1)*RepsPer+1 .. s*RepsPer
+            RepsPer, 2000:
+            ScTB2(7), 300, 300, 300, 300, 300, 300, 300:
+            ScB1(7), 1, 2, 3, 4, 5, 6, 7:
+            ScB2(7), 1, 2, 3, 4, 5, 6, 7:
+            ScGate(7), 0, 0, 0, 0, 0, 0, 0:
+            Scen, 0:
+;   decision variables (set each replication from the matrix above)
+;   TB2 = Batch 2 release, min after start
+;   MashGate: 0 = no hold, 1 = Batch 2 mash-in waits for Batch 1 tilt,
+;             2 = Batch 2 fill waits for Batch 1 tilt
+            TB2, 300:
+            Beer1Type, 1:
+            Beer2Type, 1:
+            MashGate, 0:
+;   water rates (gal/min) and buffer
+            FillRate, 2.5:
+            DrainRate, 2.0:
+            Buf, 1:
+;   deterministic brewing steps (min)
+            MashInT, 12: MashT, 48: MashOutT, 10: RecircT, 30: BoilT, 60:
+;   beer codes for Beer1Type / Beer2Type (fill depth, gal = in x 5 / 1.585):
+;     1 Lawnmower 16.1 in   2 Summer Snatch 17.8 in   3 Kolsch 18.5 in
+;     4 1781 21.0 in        5 Bourbon Vanilla 23.33 in 6 Dubble Aught 23.5 in
+;     7 Hefeweizen 16.9 in
+;   mash-water volume by beer (gal)
+            FillVol(7), 50.79, 56.15, 58.36, 66.25, 73.60, 74.13, 53.31:
+;   pre-boil fit by beer: 1 = light, 2 = heavy
+            PBGrp(7), 1, 1, 1, 2, 2, 2, 1:
+;   tun cleaning
+            CleanVol, 15.8: ScrubT, 5: TunSoak, 30:
+;   fermenter cleaning
+            FermVol, 10: FSit, 5:
+            SanVol, 10: ColdRate, 5.0: SanSit, 5: SanXfer, 5:
+;   end of transfer to fermenter
+            TiltGalLo, 5: TiltGalHi, 6: FermBatchVol, 91:
+            WatchT, 3: KillT, 1: TeardownT, 5:
+;   pre-boil conditional model
+            PBMean(2), 56.6, 47.1:
+            PBSD(2), 10.2, 11.4:
+            PBRho, -0.62: PBk, 0.7846: TrMean, 46.1: TrSD, 16.8:
+;   state variables
+            CleanFerm, 0: MTCleanT, 0: MTIdle, 0: LeaveMT1, 0:
+            TiltDone(2), 0, 0: TiltWait(2), 0, 0;
+ 
+RESOURCES:   Jeff, 1:
+             HotWater, 1:
+             MashTun, 1:
+             BoilTun, 1:
+             ChillPlate, 1;
+ 
+QUEUES:      MashTunQ, FIFO: BoilTunQ, FIFO: FermQ, FIFO: ChillQ, FIFO:
+             FillGateQ, FIFO: MashInGateQ, FIFO:
+             JBufFillQ, FIFO: JMashInQ, FIFO: JBufMashQ, FIFO: JBufMOQ, FIFO:
+             JSpargeQ, FIFO: JBufFermQ, FIFO: JTiltQ, FIFO:
+             HWFillQ, FIFO:   HWSpargeQ, FIFO:
+             FCFill1Q, FIFO: FCFill2Q, FIFO:
+             FCR1ScanQ, FIFO: FCR1JQ, FIFO: FCR1HQ, FIFO:
+             FCR2ScanQ, FIFO: FCR2JQ, FIFO: FCR2HQ, FIFO:
+             TeardownQ, FIFO:
+             TCFillQ, FIFO:   TCScrub1Q, FIFO: TCScrub2Q, FIFO;
+ 
+COUNTERS:    BatchesDone, 2;
+ 
+TALLIES:     ScenID:     MTClean:
+             Makespan:   B2MTWait:   Conflict:   MTIdleT:
+             B2BTWait:   B2FWait:    B2Gap:      BatchCycle:
+             B1TiltWait: TiltClash:  B2TiltWait: B2MIWait:  B2GateWait;
+ 
+DSTATS:      NR(Jeff),       Jeff Busy:
+             NR(HotWater),   Hot Water Busy:
+             NR(MashTun),    Mash Tun Occupied:
+             NR(BoilTun),    Boil Tun Occupied:
+             NR(ChillPlate), Chill Plate Busy;
+ 
+SEEDS:       1, 100, No:
+             2, 110, No:
+             3, 120, No:
+             4, 130, No:
+             5, 140, No:
+             6, 150, No:
+             7, 160, No;
+ 
+REPLICATE,   14000, 0, 1440, Yes, Yes, 0, , , ,Minutes;
+ 
+END;
+ 
