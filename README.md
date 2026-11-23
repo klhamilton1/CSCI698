@@ -74,8 +74,6 @@ Requires the SIMAN Run Processor (tested with 16.20.00).
 7. Repeat steps 4-6 with BrewExpB.exp.
 8. The output appears as `output_A.txt` / `output_B.txt` (SIMAN output).
 
-You can also build and run `cap.mod` with each `.exp` file by hand and save the screen output to a text file.
-
 Seeds: streams 1–7, seeds 100–160, `Initialize = No`.
 
 ## Validation
